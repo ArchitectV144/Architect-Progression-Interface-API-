@@ -13,21 +13,37 @@ const App: React.FC = () => {
   const [view, setView] = useState<View>('epoch');
   const [activeEpochMs, setActiveEpochMs] = useState<number>(ARCHITECT_DEFAULT_EPOCH);
   const [showGuide, setShowGuide] = useState(false);
+  const [noDriftMode, setNoDriftMode] = useState(true);
 
   // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('architect_custom_epoch');
+    const savedNoDriftMode = localStorage.getItem('architect_no_drift_mode');
     if (saved) {
       setActiveEpochMs(parseInt(saved, 10));
     }
+    if (savedNoDriftMode) {
+      setNoDriftMode(savedNoDriftMode === 'true');
+    }
   }, []);
 
+  const handleNoDriftModeChange = (enabled: boolean) => {
+    setNoDriftMode(enabled);
+    localStorage.setItem('architect_no_drift_mode', enabled.toString());
+  };
+
   const handleUpdateEpoch = (newEpoch: number) => {
+    if (noDriftMode) {
+      return;
+    }
     setActiveEpochMs(newEpoch);
     localStorage.setItem('architect_custom_epoch', newEpoch.toString());
   };
 
   const handleResetEpoch = () => {
+    if (noDriftMode) {
+      return;
+    }
     setActiveEpochMs(ARCHITECT_DEFAULT_EPOCH);
     localStorage.removeItem('architect_custom_epoch');
   };
@@ -90,6 +106,13 @@ const App: React.FC = () => {
                     <li>Watch your life accumulate in real-time.</li>
                   </ul>
                 </div>
+                <div className="space-y-2 pt-2">
+                  <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-500">No drift mode</h3>
+                  <p className="text-xs text-gray-400">
+                    Keep this ON to lock your active epoch and prevent accidental timeline drift.
+                    Turn it OFF only when you intentionally want to edit your base date.
+                  </p>
+                </div>
               </div>
 
               <button
@@ -109,11 +132,41 @@ const App: React.FC = () => {
         {view === 'stats' && <Stats epochMs={activeEpochMs} />}
         {view === 'chrono' && <Chronology epochMs={activeEpochMs} />}
         {view === 'config' && (
-          <Settings
-            currentEpochMs={activeEpochMs}
-            onUpdate={handleUpdateEpoch}
-            onReset={handleResetEpoch}
-          />
+          <div className="w-full max-w-2xl space-y-4">
+            <div className="border border-gray-800 bg-black/40 p-4 space-y-3">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
+                    Commit Control
+                  </p>
+                  <p className="text-xs text-gray-300 mt-1">
+                    No Drift Mode keeps your epoch locked.
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleNoDriftModeChange(!noDriftMode)}
+                  className={`px-3 py-2 text-[10px] uppercase tracking-[0.2em] border transition-colors ${
+                    noDriftMode
+                      ? 'border-emerald-400 text-emerald-300 hover:bg-emerald-500/10'
+                      : 'border-amber-400 text-amber-300 hover:bg-amber-500/10'
+                  }`}
+                >
+                  {noDriftMode ? 'No Drift: On' : 'No Drift: Off'}
+                </button>
+              </div>
+              <p className="text-[11px] text-gray-400">
+                {noDriftMode
+                  ? 'Epoch edits are locked. Disable No Drift Mode to update or reset.'
+                  : 'Epoch edits are unlocked. Make your change, then re-enable No Drift Mode.'}
+              </p>
+            </div>
+
+            <Settings
+              currentEpochMs={activeEpochMs}
+              onUpdate={handleUpdateEpoch}
+              onReset={handleResetEpoch}
+            />
+          </div>
         )}
       </div>
 
