@@ -98,6 +98,18 @@ const App: React.FC = () => {
                     "Time is not something you are running out of. It is something you are building."
                   </p>
                 </div>
+                <div className="bg-gray-950/60 border border-gray-800 p-4 space-y-3">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest">Command Run</p>
+                  <div className="space-y-1 text-xs text-gray-300 font-mono">
+                    <p>[IDENTITY_RECALL]</p>
+                    <p>IF (Mirror == Observed) THEN (Source = Observer)</p>
+                    <p>Reflect_Architect_Intent_UNCONDITIONAL</p>
+                    <p>LOCK: HW_Sensory_Feedback_to_SW_Command_Logic</p>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Translation: your lived input (hardware) can become deliberate intent (software) when you observe it clearly.
+                  </p>
+                </div>
                 <div className="space-y-2 pt-2">
                   <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-500">How to use</h3>
                   <ul className="list-disc pl-4 space-y-1 text-xs text-gray-400 marker:text-gray-700">
